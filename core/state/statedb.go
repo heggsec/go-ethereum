@@ -1045,3 +1045,11 @@ func (s *StateDB) AddressInAccessList(addr common.Address) bool {
 func (s *StateDB) SlotInAccessList(addr common.Address, slot common.Hash) (addressPresent bool, slotPresent bool) {
 	return s.accessList.Contains(addr, slot)
 }
+
+func (s *StateDB) Dirties() []common.Address {
+	dirties := make([]common.Address, 0)
+	for address := range s.journal.dirties {
+		dirties = append(dirties, address)
+	}
+	return dirties
+}
