@@ -41,7 +41,7 @@ func (q *bodyQueue) pending() int {
 }
 
 // capacity is responsible for calculating how many bodies a particular peer is
-// estimated to be able to retrieve within the alloted round trip time.
+// estimated to be able to retrieve within the allotted round trip time.
 func (q *bodyQueue) capacity(peer *peerConnection, rtt time.Duration) int {
 	return peer.BodyCapacity(rtt)
 }
@@ -58,7 +58,7 @@ func (q *bodyQueue) reserve(peer *peerConnection, items int) (*fetchRequest, boo
 	return q.queue.ReserveBodies(peer, items)
 }
 
-// unreserve is resposible for removing the current body retrieval allocation
+// unreserve is responsible for removing the current body retrieval allocation
 // assigned to a specific peer and placing it back into the pool to allow
 // reassigning to some other peer.
 func (q *bodyQueue) unreserve(peer string) int {
@@ -90,8 +90,9 @@ func (q *bodyQueue) request(peer *peerConnection, req *fetchRequest, resCh chan 
 // fetcher, unpacking the body data and delivering it to the downloader's queue.
 func (q *bodyQueue) deliver(peer *peerConnection, packet *eth.Response) (int, error) {
 	txs, uncles := packet.Res.(*eth.BlockBodiesPacket).Unpack()
+	hashsets := packet.Meta.([][]common.Hash) // {txs hashes, uncle hashes}
 
-	accepted, err := q.queue.DeliverBodies(peer.id, txs, uncles)
+	accepted, err := q.queue.DeliverBodies(peer.id, txs, hashsets[0], uncles, hashsets[1])
 	switch {
 	case err == nil && len(txs) == 0:
 		peer.log.Trace("Requested bodies delivered")

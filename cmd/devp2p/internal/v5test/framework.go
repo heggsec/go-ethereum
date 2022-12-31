@@ -60,11 +60,9 @@ type conn struct {
 	remoteAddr *net.UDPAddr
 	listeners  []net.PacketConn
 
-	log           logger
-	codec         *v5wire.Codec
-	lastRequest   v5wire.Packet
-	lastChallenge *v5wire.Whoareyou
-	idCounter     uint32
+	log       logger
+	codec     *v5wire.Codec
+	idCounter uint32
 }
 
 type logger interface {
@@ -88,7 +86,7 @@ func newConn(dest *enode.Node, log logger) *conn {
 		localNode:  ln,
 		remote:     dest,
 		remoteAddr: &net.UDPAddr{IP: dest.IP(), Port: dest.UDP()},
-		codec:      v5wire.NewCodec(ln, key, mclock.System{}),
+		codec:      v5wire.NewCodec(ln, key, mclock.System{}, nil),
 		log:        log,
 	}
 }

@@ -18,7 +18,11 @@ func (s stEnv) MarshalJSON() ([]byte, error) {
 	type stEnv struct {
 		Coinbase         common.UnprefixedAddress            `json:"currentCoinbase"   gencodec:"required"`
 		Difficulty       *math.HexOrDecimal256               `json:"currentDifficulty"`
+		Random           *math.HexOrDecimal256               `json:"currentRandom"`
 		ParentDifficulty *math.HexOrDecimal256               `json:"parentDifficulty"`
+		ParentBaseFee    *math.HexOrDecimal256               `json:"parentBaseFee,omitempty"`
+		ParentGasUsed    math.HexOrDecimal64                 `json:"parentGasUsed,omitempty"`
+		ParentGasLimit   math.HexOrDecimal64                 `json:"parentGasLimit,omitempty"`
 		GasLimit         math.HexOrDecimal64                 `json:"currentGasLimit"   gencodec:"required"`
 		Number           math.HexOrDecimal64                 `json:"currentNumber"     gencodec:"required"`
 		Timestamp        math.HexOrDecimal64                 `json:"currentTimestamp"  gencodec:"required"`
@@ -31,7 +35,11 @@ func (s stEnv) MarshalJSON() ([]byte, error) {
 	var enc stEnv
 	enc.Coinbase = common.UnprefixedAddress(s.Coinbase)
 	enc.Difficulty = (*math.HexOrDecimal256)(s.Difficulty)
+	enc.Random = (*math.HexOrDecimal256)(s.Random)
 	enc.ParentDifficulty = (*math.HexOrDecimal256)(s.ParentDifficulty)
+	enc.ParentBaseFee = (*math.HexOrDecimal256)(s.ParentBaseFee)
+	enc.ParentGasUsed = math.HexOrDecimal64(s.ParentGasUsed)
+	enc.ParentGasLimit = math.HexOrDecimal64(s.ParentGasLimit)
 	enc.GasLimit = math.HexOrDecimal64(s.GasLimit)
 	enc.Number = math.HexOrDecimal64(s.Number)
 	enc.Timestamp = math.HexOrDecimal64(s.Timestamp)
@@ -48,7 +56,11 @@ func (s *stEnv) UnmarshalJSON(input []byte) error {
 	type stEnv struct {
 		Coinbase         *common.UnprefixedAddress           `json:"currentCoinbase"   gencodec:"required"`
 		Difficulty       *math.HexOrDecimal256               `json:"currentDifficulty"`
+		Random           *math.HexOrDecimal256               `json:"currentRandom"`
 		ParentDifficulty *math.HexOrDecimal256               `json:"parentDifficulty"`
+		ParentBaseFee    *math.HexOrDecimal256               `json:"parentBaseFee,omitempty"`
+		ParentGasUsed    *math.HexOrDecimal64                `json:"parentGasUsed,omitempty"`
+		ParentGasLimit   *math.HexOrDecimal64                `json:"parentGasLimit,omitempty"`
 		GasLimit         *math.HexOrDecimal64                `json:"currentGasLimit"   gencodec:"required"`
 		Number           *math.HexOrDecimal64                `json:"currentNumber"     gencodec:"required"`
 		Timestamp        *math.HexOrDecimal64                `json:"currentTimestamp"  gencodec:"required"`
@@ -69,8 +81,20 @@ func (s *stEnv) UnmarshalJSON(input []byte) error {
 	if dec.Difficulty != nil {
 		s.Difficulty = (*big.Int)(dec.Difficulty)
 	}
+	if dec.Random != nil {
+		s.Random = (*big.Int)(dec.Random)
+	}
 	if dec.ParentDifficulty != nil {
 		s.ParentDifficulty = (*big.Int)(dec.ParentDifficulty)
+	}
+	if dec.ParentBaseFee != nil {
+		s.ParentBaseFee = (*big.Int)(dec.ParentBaseFee)
+	}
+	if dec.ParentGasUsed != nil {
+		s.ParentGasUsed = uint64(*dec.ParentGasUsed)
+	}
+	if dec.ParentGasLimit != nil {
+		s.ParentGasLimit = uint64(*dec.ParentGasLimit)
 	}
 	if dec.GasLimit == nil {
 		return errors.New("missing required field 'currentGasLimit' for stEnv")
